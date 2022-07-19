@@ -1,8 +1,25 @@
-# opentelemetry-play Project
+# OpenTelemetry Infinispan 
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
 If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+
+## External services
+
+We need a Jaeger server instance:
+
+``` shell script
+jaeger> ./jaeger-all-in-one --collector.otlp.enabled
+```
+
+And an Infinispan server listening on 11222 (default Hot Rod port)
+Furthermore we need to create the admin user and to configure the tracing on Infinispan server instance:
+
+``` shell script
+infinispan-server/bin>./cli.sh user create -g admin -p pass user
+export JAVA_OPTS="-Dinfinispan.tracing.enabled=true -Dotel.service.name=infinispan-server-service -Dotel.exporter.otlp.endpoint=http://localhost:4317 -Dotel.metrics.exporter=none"
+infinispan-server/bin>./server.sh
+```
 
 ## Running the application in dev mode
 
@@ -11,41 +28,17 @@ You can run your application in dev mode that enables live coding using:
 ./mvnw compile quarkus:dev
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
-
-## Packaging and running the application
-
-The application can be packaged using:
+## Call the rest resource
 ```shell script
-./mvnw package
-```
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
-
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
-
-If you want to build an _über-jar_, execute the following command:
-```shell script
-./mvnw package -Dquarkus.package.type=uber-jar
+curl http://localhost:8080/ciao
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+The output should be similar to
+> {traceparent=00-f9ee6cdba83bad86352b73d0fe187707-17b45466258cb6a1-01}
 
-## Creating a native executable
+## Look the result
 
-You can create a native executable using: 
-```shell script
-./mvnw package -Pnative
-```
-
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using: 
-```shell script
-./mvnw package -Pnative -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable with: `./target/opentelemetry-play-1.0.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.
+Go to Jaeger console: http://localhost:16686/
 
 ## Related Guides
 
