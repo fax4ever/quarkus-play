@@ -6,8 +6,8 @@
   <artifactId>quarkus-play</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-
   <modules>
     <module>opentelemetry-play</module>
+    <module>elasticsearch-play</module>
   </modules>
 </project>
