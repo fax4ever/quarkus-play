@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
+import org.elasticsearch.client.ResponseException;
 import org.elasticsearch.client.RestClient;
 
 import com.google.gson.JsonObject;
@@ -17,6 +18,29 @@ public class FruitService {
 
    @Inject
    RestClient restClient;
+
+   public String init() throws IOException {
+      Request request = new Request(
+            "PUT",
+            "/" +Event.FRUIT_TYPE);
+
+      JsonObject enabled = new JsonObject();
+      enabled.addProperty("enabled", false);
+      JsonObject source = new JsonObject();
+      source.add("_source", enabled);
+      JsonObject mappings = new JsonObject();
+      mappings.add("mappings", source);
+
+      request.setJsonEntity(mappings.toString());
+
+      try {
+         Response response = restClient.performRequest(request);
+         return EntityUtils.toString(response.getEntity());
+      } catch (ResponseException ex) {
+         // probably => resource_already_exists_exception
+         return ex.getMessage();
+      }
+   }
 
    public String index(Event event) throws IOException {
       Request request = new Request(

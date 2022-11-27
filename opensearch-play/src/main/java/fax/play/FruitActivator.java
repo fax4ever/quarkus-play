@@ -19,15 +19,20 @@ public class FruitActivator {
 
    @PostConstruct
    void startup() throws Exception {
+      String response = fruitService.init();
+      LOG.info("config index --> " + response);
+
       Event strawberry = Event.fruit("strawberry", "red");
-      String response = fruitService.index(strawberry);
+      response = fruitService.index(strawberry);
       LOG.info("index 1 --> " + response);
 
       Event blueberry = Event.fruit("blueberry", "blue");
       response = fruitService.index(blueberry);
       LOG.info("index 2 --> " + response);
 
-      String red = fruitService.searchByColor("red");
-      LOG.info("reds --> " + red);
+      Thread.sleep(1000);
+
+      response = fruitService.searchByColor("red");
+      LOG.info("reds --> " + response);
    }
 }
