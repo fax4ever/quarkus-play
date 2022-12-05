@@ -23,6 +23,8 @@
         <compiler-plugin.version>3.8.1</compiler-plugin.version>
         <surefire-plugin.version>3.0.0-M7</surefire-plugin.version>
         <assertj.version>3.23.1</assertj.version>
+
+        <skipITs>true</skipITs>
     </properties>
 
     <dependencyManagement>
@@ -47,9 +49,9 @@
             <artifactId>quarkus-elasticsearch-rest-client</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>${gson.version}</version>
+            <groupId>org.infinispan</groupId>
+            <artifactId>infinispan-commons</artifactId>
+            <version>14.0.2.Final</version>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
