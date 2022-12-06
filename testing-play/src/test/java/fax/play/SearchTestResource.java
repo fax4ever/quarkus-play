@@ -34,6 +34,13 @@ public class SearchTestResource implements QuarkusTestResourceLifecycleManager, 
 
       container.start();
 
+      try {
+         Thread.sleep(1000);
+      } catch (InterruptedException e) {
+         // After the container is started the OpenSearch server takes some time to init the security subsystem
+         // TODO Find a better way to wait for it
+      }
+
       return ImmutableMap.of(
             "quarkus.elasticsearch.hosts", container.getHttpHostAddress(),
             "quarkus.elasticsearch.username", "admin", "quarkus.elasticsearch.password", "admin");

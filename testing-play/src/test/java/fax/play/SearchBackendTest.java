@@ -1,9 +1,11 @@
 package fax.play;
 
+import static org.assertj.core.api.Assertions.anyOf;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import javax.inject.Inject;
 
+import org.assertj.core.api.Condition;
 import org.infinispan.commons.dataconversion.internal.Json;
 import org.jboss.logging.Logger;
 import org.junit.jupiter.api.Test;
@@ -28,7 +30,10 @@ public class SearchBackendTest {
       String response = searchBackend.put("developers", "fax4ever", json).toCompletableFuture().join();
       LOG.info(response);
 
-      assertThat(response).isNotBlank();
+      Condition<String> created = new Condition<>(r -> r.contains("\"result\":\"created\""), "created");
+      Condition<String> updated = new Condition<>(r -> r.contains("\"result\":\"updated\""), "updated");
+
+      assertThat(response).is(anyOf(created, updated));
    }
 
 }

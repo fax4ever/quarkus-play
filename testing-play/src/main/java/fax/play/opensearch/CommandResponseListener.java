@@ -11,20 +11,18 @@ import org.elasticsearch.client.ResponseListener;
 
 class CommandResponseListener implements ResponseListener {
 
-   CompletableFuture<CommandResponse> future = new CompletableFuture<>();
+   final CompletableFuture<String> future = new CompletableFuture<>();
 
    @Override
    public void onSuccess(Response response) {
-      CommandResponse result = new CommandResponse(true);
-
       try {
          String entity = EntityUtils.toString(response.getEntity());
-         result.entity(entity);
+         future.complete(entity);
       } catch (IOException exception) {
-         result.exception(exception);
+         // in this case the command has been executed server side,
+         // the only problem here is to get the response message from the server
+         future.complete(exception.getMessage());
       }
-
-      future.complete(result);
    }
 
    @Override
@@ -34,14 +32,15 @@ class CommandResponseListener implements ResponseListener {
           * The client tries to guess what's an error and what's not, but it's too naive.
           * A 404 on DELETE should be accepted for instance to support idempotency.
           */
-         CommandResponse result = new CommandResponse(true);
-         result.exception(exception);
-         future.complete(result);
+         // TODO Verify, case by case, after the driver is integrated, the ResponseException kinds we want tolerate,
+         //   completing the future normally, and the ones we don't want, reporting the exception to the caller,
+         //   completing the future exceptionally.
+         future.complete(exception.getMessage());
       }
       future.completeExceptionally(exception);
    }
 
-   public CompletionStage<CommandResponse> completionStage() {
+   public CompletionStage<String> completionStage() {
       return future;
    }
 }
