@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.infinispan.commons.dataconversion.internal.Json;
 
-public interface QueryResponse {
+public interface QueryResult {
 
    long hitCount();
 

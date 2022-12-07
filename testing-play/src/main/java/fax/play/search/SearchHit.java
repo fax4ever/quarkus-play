@@ -23,4 +23,13 @@ public final class SearchHit {
    public Double score() {
       return score;
    }
+
+   @Override
+   public String toString() {
+      return "SearchHit{" +
+            "indexName='" + indexName + '\'' +
+            ", documentId='" + documentId + '\'' +
+            ", score=" + score +
+            '}';
+   }
 }

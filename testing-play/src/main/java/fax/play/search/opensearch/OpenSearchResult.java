@@ -6,9 +6,9 @@ import java.util.stream.Collectors;
 import org.infinispan.commons.dataconversion.internal.Json;
 
 import fax.play.search.SearchHit;
-import fax.play.search.SearchResponse;
+import fax.play.search.SearchResult;
 
-public class OpenSearchResponse implements SearchResponse {
+public class OpenSearchResult implements SearchResult {
 
    private final long hitCount;
    private final boolean hitCountExact;
@@ -16,9 +16,9 @@ public class OpenSearchResponse implements SearchResponse {
    private final boolean hitsExacts;
    private final int duration;
 
-   public OpenSearchResponse(Json queryResponse) {
+   public OpenSearchResult(Json queryResponse) {
       duration = queryResponse.at("took").asInteger();
-      hitsExacts = queryResponse.at("timed_out").asBoolean();
+      hitsExacts = !queryResponse.at("timed_out").asBoolean();
       Json hits = queryResponse.at("hits");
       Json total = hits.at("total");
       hitCount = total.at("value").asLong();
@@ -55,5 +55,16 @@ public class OpenSearchResponse implements SearchResponse {
    @Override
    public int duration() {
       return duration;
+   }
+
+   @Override
+   public String toString() {
+      return "OpenSearchResult{" +
+            "hitCount=" + hitCount +
+            ", hitCountExact=" + hitCountExact +
+            ", hits=" + hits +
+            ", hitsExacts=" + hitsExacts +
+            ", duration=" + duration +
+            '}';
    }
 }

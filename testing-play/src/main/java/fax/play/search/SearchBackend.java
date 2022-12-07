@@ -12,6 +12,6 @@ public interface SearchBackend {
 
    CompletionStage<String> remove(String indexName, String documentId);
 
-   CompletionStage<Json> query(String sql);
+   CompletionStage<SearchResult> query(String sql);
 
 }

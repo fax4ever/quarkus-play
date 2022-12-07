@@ -2,7 +2,7 @@ package fax.play.search;
 
 import java.util.List;
 
-public interface SearchResponse {
+public interface SearchResult {
 
    long hitCount();
 

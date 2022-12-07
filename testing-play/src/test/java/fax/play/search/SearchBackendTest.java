@@ -3,8 +3,6 @@ package fax.play.search;
 import static org.assertj.core.api.Assertions.anyOf;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import org.assertj.core.api.Condition;
@@ -46,13 +44,10 @@ public class SearchBackendTest {
       Thread.sleep(1000);
 
       // search
-      Json queryResponse = searchBackend.query("select * from developers").toCompletableFuture().join();
+      SearchResult queryResponse = searchBackend.query("select * from developers").toCompletableFuture().join();
       LOG.info(queryResponse);
       assertThat(queryResponse).isNotNull();
-
-      List<Json> hits = queryResponse.at("hits").at("hits").asJsonList();
-      LOG.info(hits);
-      assertThat(hits).hasSize(1);
+      assertThat(queryResponse.hits()).hasSize(1);
 
       // remove
       response = searchBackend.remove("developers", "fax4ever").toCompletableFuture().join();
@@ -67,10 +62,6 @@ public class SearchBackendTest {
       queryResponse = searchBackend.query("select * from developers").toCompletableFuture().join();
       LOG.info(queryResponse);
       assertThat(queryResponse).isNotNull();
-
-      hits = queryResponse.at("hits").at("hits").asJsonList();
-      LOG.info(hits);
-      assertThat(hits).isEmpty();
+      assertThat(queryResponse.hits()).isEmpty();
    }
-
 }

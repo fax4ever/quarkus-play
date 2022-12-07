@@ -10,6 +10,7 @@ import org.elasticsearch.client.RestClient;
 import org.infinispan.commons.dataconversion.internal.Json;
 
 import fax.play.search.SearchBackend;
+import fax.play.search.SearchResult;
 import io.quarkus.arc.lookup.LookupIfProperty;
 
 @LookupIfProperty(name = "service.opensearch.enabled", stringValue = "true")
@@ -47,7 +48,7 @@ public class OpenSearchBackend implements SearchBackend {
    }
 
    @Override
-   public CompletionStage<Json> query(String sql) {
+   public CompletionStage<SearchResult> query(String sql) {
       Request request = new Request("POST", "/_plugins/_sql");
       request.addParameter("format", "json");
       request.setJsonEntity(Json.object("query", sql).toString());
@@ -61,7 +62,7 @@ public class OpenSearchBackend implements SearchBackend {
       return responseListener.completionStage();
    }
 
-   private CompletionStage<Json> submitQuery(Request request) {
+   private CompletionStage<SearchResult> submitQuery(Request request) {
       QueryResponseListener responseListener = new QueryResponseListener();
       restClient.performRequestAsync(request, responseListener);
       return responseListener.completionStage();

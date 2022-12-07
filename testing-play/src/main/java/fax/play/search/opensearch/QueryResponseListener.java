@@ -8,15 +8,18 @@ import org.elasticsearch.client.Response;
 import org.elasticsearch.client.ResponseListener;
 import org.infinispan.commons.dataconversion.internal.Json;
 
+import fax.play.search.SearchResult;
+
 class QueryResponseListener implements ResponseListener {
 
-   final CompletableFuture<Json> future = new CompletableFuture<>();
+   final CompletableFuture<SearchResult> future = new CompletableFuture<>();
 
    @Override
    public void onSuccess(Response response) {
       try {
          String jsonList = EntityUtils.toString(response.getEntity());
-         future.complete(Json.read(jsonList));
+         Json queryResponse = Json.read(jsonList);
+         future.complete(new OpenSearchResult(queryResponse));
       } catch (Throwable throwable) {
          future.completeExceptionally(throwable);
       }
@@ -27,7 +30,7 @@ class QueryResponseListener implements ResponseListener {
       future.completeExceptionally(exception);
    }
 
-   public CompletionStage<Json> completionStage() {
+   public CompletionStage<SearchResult> completionStage() {
       return future;
    }
 }
