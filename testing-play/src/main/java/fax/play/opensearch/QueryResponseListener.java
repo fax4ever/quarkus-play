@@ -1,6 +1,5 @@
 package fax.play.opensearch;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
@@ -11,14 +10,13 @@ import org.infinispan.commons.dataconversion.internal.Json;
 
 class QueryResponseListener implements ResponseListener {
 
-   final CompletableFuture<List<Json>> future = new CompletableFuture<>();
+   final CompletableFuture<Json> future = new CompletableFuture<>();
 
    @Override
    public void onSuccess(Response response) {
       try {
          String jsonList = EntityUtils.toString(response.getEntity());
-         Json read = Json.read(jsonList);
-         future.complete(read.asJsonList());
+         future.complete(Json.read(jsonList));
       } catch (Throwable throwable) {
          future.completeExceptionally(throwable);
       }
@@ -29,7 +27,7 @@ class QueryResponseListener implements ResponseListener {
       future.completeExceptionally(exception);
    }
 
-   public CompletionStage<List<Json>> completionStage() {
+   public CompletionStage<Json> completionStage() {
       return future;
    }
 }

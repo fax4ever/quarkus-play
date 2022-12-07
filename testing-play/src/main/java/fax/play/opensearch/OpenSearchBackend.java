@@ -1,6 +1,5 @@
 package fax.play.opensearch;
 
-import java.util.List;
 import java.util.concurrent.CompletionStage;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -48,8 +47,8 @@ public class OpenSearchBackend implements SearchBackend {
    }
 
    @Override
-   public CompletionStage<List<Json>> query(String sql) {
-      Request request = new Request("POST", "/_sql");
+   public CompletionStage<Json> query(String sql) {
+      Request request = new Request("POST", "/_plugins/_sql");
       request.addParameter("format", "json");
       request.setJsonEntity(Json.object("query", sql).toString());
 
@@ -62,7 +61,7 @@ public class OpenSearchBackend implements SearchBackend {
       return responseListener.completionStage();
    }
 
-   private CompletionStage<List<Json>> submitQuery(Request request) {
+   private CompletionStage<Json> submitQuery(Request request) {
       QueryResponseListener responseListener = new QueryResponseListener();
       restClient.performRequestAsync(request, responseListener);
       return responseListener.completionStage();

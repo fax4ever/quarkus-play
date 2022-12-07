@@ -35,10 +35,10 @@ public class SearchTestResource implements QuarkusTestResourceLifecycleManager, 
       container.start();
 
       try {
-         Thread.sleep(1000);
-      } catch (InterruptedException e) {
          // After the container is started the OpenSearch server takes some time to init the security subsystem
          // TODO Find a better way to wait for it
+         Thread.sleep(2000);
+      } catch (InterruptedException e) {
       }
 
       return ImmutableMap.of(
