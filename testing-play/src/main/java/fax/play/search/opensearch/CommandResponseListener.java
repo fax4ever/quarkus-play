@@ -1,4 +1,4 @@
-package fax.play.opensearch;
+package fax.play.search.opensearch;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;

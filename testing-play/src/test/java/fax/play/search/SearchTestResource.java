@@ -1,4 +1,4 @@
-package fax.play;
+package fax.play.search;
 
 import java.util.Map;
 import java.util.Optional;

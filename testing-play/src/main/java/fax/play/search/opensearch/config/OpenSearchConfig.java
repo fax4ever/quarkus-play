@@ -1,4 +1,4 @@
-package fax.play.opensearch.config;
+package fax.play.search.opensearch.config;
 
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;

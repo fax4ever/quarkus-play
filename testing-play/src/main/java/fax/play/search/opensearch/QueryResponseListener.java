@@ -1,4 +1,4 @@
-package fax.play.opensearch;
+package fax.play.search.opensearch;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;

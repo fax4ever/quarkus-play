@@ -1,4 +1,4 @@
-package fax.play;
+package fax.play.search;
 
 import java.util.concurrent.CompletionStage;
 
@@ -8,9 +8,9 @@ public interface SearchBackend {
 
    CompletionStage<String> mapping(String indexName);
 
-   CompletionStage<String> put(String indexName, String key, Json value);
+   CompletionStage<String> put(String indexName, String documentId, Json value);
 
-   CompletionStage<String> remove(String indexName, String key);
+   CompletionStage<String> remove(String indexName, String documentId);
 
    CompletionStage<Json> query(String sql);
 

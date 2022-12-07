@@ -1,4 +1,4 @@
-package fax.play;
+package fax.play.search;
 
 import static org.assertj.core.api.Assertions.anyOf;
 import static org.assertj.core.api.Assertions.assertThat;

@@ -1,4 +1,4 @@
-package fax.play.opensearch;
+package fax.play.search.opensearch;
 
 import java.util.concurrent.CompletionStage;
 
@@ -9,7 +9,7 @@ import org.elasticsearch.client.Request;
 import org.elasticsearch.client.RestClient;
 import org.infinispan.commons.dataconversion.internal.Json;
 
-import fax.play.SearchBackend;
+import fax.play.search.SearchBackend;
 import io.quarkus.arc.lookup.LookupIfProperty;
 
 @LookupIfProperty(name = "service.opensearch.enabled", stringValue = "true")
@@ -32,16 +32,16 @@ public class OpenSearchBackend implements SearchBackend {
    }
 
    @Override
-   public CompletionStage<String> put(String indexName, String key, Json value) {
-      Request request = new Request("PUT", "/" + indexName + "/_doc/" + key);
+   public CompletionStage<String> put(String indexName, String documentId, Json value) {
+      Request request = new Request("PUT", "/" + indexName + "/_doc/" + documentId);
       request.setJsonEntity(value.toString());
 
       return commandSubmit(request);
    }
 
    @Override
-   public CompletionStage<String> remove(String indexName, String key) {
-      Request request = new Request("DELETE", "/" + indexName + "/_doc/" + key);
+   public CompletionStage<String> remove(String indexName, String documentId) {
+      Request request = new Request("DELETE", "/" + indexName + "/_doc/" + documentId);
 
       return commandSubmit(request);
    }
