@@ -13,5 +13,6 @@
         <module>elasticsearch-play</module>
         <module>opensearch-play</module>
         <module>testing-play</module>
+        <module>coding-indexed-queries</module>
     </modules>
 </project>
