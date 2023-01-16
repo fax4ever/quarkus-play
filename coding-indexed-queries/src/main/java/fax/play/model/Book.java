@@ -70,4 +70,16 @@ public class Book {
    public List<Review> getReviews() {
       return reviews;
    }
+
+   @Override
+   public String toString() {
+      return "Book{" +
+            "title='" + title + '\'' +
+            ", yearOfPublication=" + yearOfPublication +
+            ", description='" + description + '\'' +
+            ", price=" + price +
+            ", author=" + author +
+            ", reviews=" + reviews +
+            '}';
+   }
 }

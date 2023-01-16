@@ -4,12 +4,10 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.RemoteCacheManager;
 import org.infinispan.commons.configuration.StringConfiguration;
 import org.infinispan.protostream.GeneratedSchema;
 import org.infinispan.protostream.annotations.AutoProtoSchemaBuilder;
-import org.infinispan.query.remote.client.ProtobufMetadataManagerConstants;
 import org.jboss.logging.Logger;
 
 import fax.play.model.Author;
@@ -41,29 +39,19 @@ public class Config {
 
    void onStart(@Observes StartupEvent event) {
       LOG.info("Get or create cache: " + CACHE_NAME);
-
-      // Register proto schema on server side
-      RemoteCache<String, String> metadataCache = remoteCacheManager.getCache(ProtobufMetadataManagerConstants.PROTOBUF_METADATA_CACHE_NAME);
-      metadataCache.put(BooksSchema.INSTANCE.getProtoFileName(), BooksSchema.INSTANCE.getProtoFile());
-      metadataCache.put(ShapesSchema.INSTANCE.getProtoFileName(), ShapesSchema.INSTANCE.getProtoFile());
-
-      RemoteCache<Object, Object> cache = remoteCacheManager.administration()
+      remoteCacheManager.administration()
             .getOrCreateCache(CACHE_NAME, new StringConfiguration(INDEXED_CACHE_DEFINITION));
-      // clear at startup
-      cache.clear();
    }
 
    @AutoProtoSchemaBuilder(includeClasses = {Book.class, Author.class, Review.class},
          schemaFileName = "books-schema.proto",
          schemaPackageName = "fax.play")
-   public interface BooksSchema extends GeneratedSchema {
-      BooksSchema INSTANCE = new BooksSchemaImpl();
+   interface BooksSchema extends GeneratedSchema {
    }
 
    @AutoProtoSchemaBuilder(includeClasses = {Shape.class},
          schemaFileName = "shapes-schema.proto",
          schemaPackageName = "fax.play")
-   public interface ShapesSchema extends GeneratedSchema {
-      ShapesSchema INSTANCE = new ShapesSchemaImpl();
+   interface ShapesSchema extends GeneratedSchema {
    }
 }

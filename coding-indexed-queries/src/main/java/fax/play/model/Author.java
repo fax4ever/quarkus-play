@@ -39,4 +39,13 @@ public class Author {
    public Integer getNumberOfPublishedBooks() {
       return numberOfPublishedBooks;
    }
+
+   @Override
+   public String toString() {
+      return "Author{" +
+            "firstname='" + firstname + '\'' +
+            ", surname='" + surname + '\'' +
+            ", numberOfPublishedBooks=" + numberOfPublishedBooks +
+            '}';
+   }
 }

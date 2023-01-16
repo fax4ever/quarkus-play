@@ -41,4 +41,13 @@ public class Review {
    public Float getScore() {
       return score;
    }
+
+   @Override
+   public String toString() {
+      return "Review{" +
+            "date=" + date +
+            ", content='" + content + '\'' +
+            ", score=" + score +
+            '}';
+   }
 }
