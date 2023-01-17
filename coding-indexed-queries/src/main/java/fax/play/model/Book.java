@@ -1,6 +1,7 @@
 package fax.play.model;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.infinispan.api.annotations.indexing.Basic;
 import org.infinispan.api.annotations.indexing.Decimal;
@@ -81,5 +82,18 @@ public class Book {
             ", author=" + author +
             ", reviews=" + reviews +
             '}';
+   }
+
+   @Override
+   public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      Book book = (Book) o;
+      return Objects.equals(title, book.title) && Objects.equals(yearOfPublication, book.yearOfPublication) && Objects.equals(description, book.description) && Objects.equals(price, book.price) && Objects.equals(author, book.author) && Objects.equals(reviews, book.reviews);
+   }
+
+   @Override
+   public int hashCode() {
+      return Objects.hash(title, yearOfPublication, description, price, author, reviews);
    }
 }

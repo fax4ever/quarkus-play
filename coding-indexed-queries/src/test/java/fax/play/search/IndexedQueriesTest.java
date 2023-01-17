@@ -1,11 +1,19 @@
 package fax.play.search;
 
+import static fax.play.search.util.ModelGenerator.EFFECTIVE;
+import static fax.play.search.util.ModelGenerator.MEMORY;
+import static fax.play.search.util.ModelGenerator.MICROSERVICES;
+import static fax.play.search.util.ModelGenerator.MULTIPROCESSOR;
+import static fax.play.search.util.ModelGenerator.PERFORMANCE;
+import static fax.play.search.util.ModelGenerator.PRACTICE;
+import static fax.play.search.util.ModelGenerator.UTIL;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import javax.inject.Inject;
 
 import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.Search;
+import org.infinispan.commons.util.CloseableIterator;
 import org.infinispan.query.dsl.Query;
 import org.infinispan.query.dsl.QueryFactory;
 import org.infinispan.query.dsl.QueryResult;
@@ -25,7 +33,7 @@ public class IndexedQueriesTest {
 
    @Inject
    @Remote(Config.CACHE_NAME)
-   RemoteCache<String, Object> cache;
+   RemoteCache<String, Book> cache;
 
    @BeforeAll
    public void beforeAll() {
@@ -35,12 +43,122 @@ public class IndexedQueriesTest {
    }
 
    @Test
-   public void test() {
+   public void testLowercaseNormalizedField() {
       QueryFactory queryFactory = Search.getQueryFactory(cache);
+      Query<Book> query = queryFactory.create("from fax.play.book b where b.title = :title");
+      QueryResult<Book> result;
 
-      Query<Book> query = queryFactory.create("from fax.play.book b");
-      QueryResult<Book> result = query.execute();
+      query.setParameter("title", PERFORMANCE);
+      result = query.execute();
+      assertThat(result.hitCount()).hasValue(1);
+      assertThat(result.list()).extracting("title").containsExactlyInAnyOrder(PERFORMANCE);
 
-      assertThat(result).isNotNull();
+      query.setParameter("title", "javA pERformANCE: In-DepTH advice FOR Tuning and Programming Java 8, 11, and Beyond");
+      result = query.execute();
+      assertThat(result.hitCount()).hasValue(1);
+      assertThat(result.list()).extracting("title").containsExactlyInAnyOrder(PERFORMANCE);
+   }
+
+   @Test
+   public void testAnalysis() {
+      QueryFactory queryFactory = Search.getQueryFactory(cache);
+      Query<Book> query = queryFactory.create("from fax.play.book b where b.description : :description");
+      QueryResult<Book> result;
+
+      query.setParameter("description", "Java");
+      result = query.execute();
+      assertThat(result.hitCount()).hasValue(5);
+      assertThat(result.list()).extracting("title").containsExactlyInAnyOrder(EFFECTIVE, PRACTICE, UTIL, MEMORY, PERFORMANCE);
+
+      query.setParameter("description", "bOOk"); // the parameter is also normalized
+      result = query.execute();
+      assertThat(result.hitCount()).hasValue(3);
+      assertThat(result.list()).extracting("title").containsExactlyInAnyOrder(UTIL, PERFORMANCE, MICROSERVICES);
+   }
+
+   @Test
+   public void testRangedQueryOnNumericField_decimalField_andOrderBy() {
+      QueryFactory queryFactory = Search.getQueryFactory(cache);
+      Query<Book> query;
+      QueryResult<Book> result;
+
+      query = queryFactory.create("from fax.play.book b where b.yearOfPublication <= 2017 or b.yearOfPublication > 2020 order by b.yearOfPublication");
+      result = query.execute();
+      assertThat(result.hitCount()).hasValue(5);
+      assertThat(result.list()).extracting("title").containsExactly(PRACTICE, UTIL, EFFECTIVE, MICROSERVICES, MEMORY);
+
+      query = queryFactory.create("from fax.play.book b where b.price < 70.00 order by b.yearOfPublication desc");
+      result = query.execute();
+      assertThat(result.hitCount()).hasValue(4);
+      assertThat(result.list()).extracting("title").containsExactly(MICROSERVICES, PERFORMANCE, EFFECTIVE, UTIL);
+   }
+
+   @Test
+   public void testProjection() {
+      QueryFactory queryFactory = Search.getQueryFactory(cache);
+      Query<Object[]> query = queryFactory.create(
+            "select b.title, b.yearOfPublication from fax.play.book b where b.author.numberOfPublishedBooks > 10 order by b.price");
+      QueryResult<Object[]> result = query.execute();
+
+      assertThat(result.list()).map(objects -> objects[0]).containsExactly(PERFORMANCE, EFFECTIVE, MICROSERVICES, MULTIPROCESSOR, MEMORY);
+      assertThat(result.list()).map(objects -> objects[1]).containsExactly(2020, 2017, 2021, 2020, 2022);
+   }
+
+   @Test
+   public void testNestedQuery() {
+      QueryFactory queryFactory = Search.getQueryFactory(cache);
+      Query<Book> query;
+      QueryResult<Book> result;
+
+      query = queryFactory.create("from fax.play.book b where b.reviews.content : 'nice'");
+      result = query.execute();
+      assertThat(result.hitCount()).hasValue(4);
+      assertThat(result.list()).extracting("title").containsExactlyInAnyOrder(PRACTICE, UTIL, MEMORY, MULTIPROCESSOR);
+
+      query = queryFactory.create("from fax.play.book b where b.reviews.score = 8.75");
+      result = query.execute();
+      assertThat(result.list()).extracting("title").containsExactlyInAnyOrder(EFFECTIVE, PRACTICE, UTIL, MEMORY, MULTIPROCESSOR);
+
+      query = queryFactory.create("from fax.play.book b where b.reviews.score = 8.75 and b.reviews.content : 'nice'");
+      result = query.execute();
+      assertThat(result.list()).extracting("title").containsExactlyInAnyOrder(PRACTICE, UTIL, MEMORY, MULTIPROCESSOR);
+   }
+
+   @Test
+   public void testPagination() {
+      QueryFactory queryFactory = Search.getQueryFactory(cache);
+      Query<Book> query = queryFactory.create("from fax.play.book b order by title");
+      QueryResult<Book> result;
+      query.startOffset(0);
+
+      // page 1
+      query.maxResults(3);
+      result = query.execute();
+      assertThat(result.hitCount()).hasValue(7);
+      assertThat(result.list()).extracting("title").containsExactly(EFFECTIVE, PRACTICE, MEMORY);
+
+      // page 2
+      query.startOffset(3);
+      result = query.execute();
+      assertThat(result.hitCount()).hasValue(7);
+      assertThat(result.list()).extracting("title").containsExactly(PERFORMANCE, UTIL, MICROSERVICES);
+
+      // page3
+      query.startOffset(6);
+      result = query.execute();
+      assertThat(result.hitCount()).hasValue(7);
+      assertThat(result.list()).extracting("title").containsExactly(MULTIPROCESSOR);
+   }
+
+   @Test
+   public void testScrolling() {
+      // this is a stateful pagination
+
+      QueryFactory queryFactory = Search.getQueryFactory(cache);
+      Query<Book> query = queryFactory.create("from fax.play.book b order by title");
+      try (CloseableIterator<Book> iterator = query.iterator()) {
+         assertThat(iterator).toIterable().extracting("title")
+               .containsExactly(EFFECTIVE, PRACTICE, MEMORY, PERFORMANCE, UTIL, MICROSERVICES, MULTIPROCESSOR);
+      }
    }
 }
