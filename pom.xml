@@ -12,6 +12,6 @@
     <module>opensearch-play</module>
     <module>testing-play</module>
     <module>coding-indexed-queries</module>
-    <module>opentelemetry-tracing</module>
+    <module>infinispan-tracing</module>
   </modules>
 </project>
