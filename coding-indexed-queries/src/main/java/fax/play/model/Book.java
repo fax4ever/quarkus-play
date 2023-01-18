@@ -1,7 +1,6 @@
 package fax.play.model;
 
 import java.util.List;
-import java.util.Objects;
 
 import org.infinispan.api.annotations.indexing.Basic;
 import org.infinispan.api.annotations.indexing.Decimal;
@@ -11,6 +10,8 @@ import org.infinispan.api.annotations.indexing.Keyword;
 import org.infinispan.api.annotations.indexing.Text;
 import org.infinispan.api.annotations.indexing.option.Structure;
 import org.infinispan.api.annotations.indexing.option.TermVector;
+import org.infinispan.protostream.GeneratedSchema;
+import org.infinispan.protostream.annotations.AutoProtoSchemaBuilder;
 import org.infinispan.protostream.annotations.ProtoFactory;
 import org.infinispan.protostream.annotations.ProtoField;
 import org.infinispan.protostream.annotations.ProtoName;
@@ -84,16 +85,9 @@ public class Book {
             '}';
    }
 
-   @Override
-   public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
-      Book book = (Book) o;
-      return Objects.equals(title, book.title) && Objects.equals(yearOfPublication, book.yearOfPublication) && Objects.equals(description, book.description) && Objects.equals(price, book.price) && Objects.equals(author, book.author) && Objects.equals(reviews, book.reviews);
-   }
-
-   @Override
-   public int hashCode() {
-      return Objects.hash(title, yearOfPublication, description, price, author, reviews);
+   @AutoProtoSchemaBuilder(includeClasses = {Book.class, Author.class, Review.class},
+         schemaFileName = "books-schema.proto",
+         schemaPackageName = "fax.play")
+   interface BooksSchema extends GeneratedSchema {
    }
 }

@@ -4,6 +4,8 @@ import org.infinispan.api.annotations.indexing.Basic;
 import org.infinispan.api.annotations.indexing.Indexed;
 import org.infinispan.api.annotations.indexing.Keyword;
 import org.infinispan.api.annotations.indexing.Text;
+import org.infinispan.protostream.GeneratedSchema;
+import org.infinispan.protostream.annotations.AutoProtoSchemaBuilder;
 import org.infinispan.protostream.annotations.ProtoFactory;
 import org.infinispan.protostream.annotations.ProtoField;
 import org.infinispan.protostream.annotations.ProtoName;
@@ -47,5 +49,21 @@ public class Shape {
    @ProtoField(value = 4)
    public String getDescription() {
       return description;
+   }
+
+   @Override
+   public String toString() {
+      return "Shape{" +
+            "name='" + name + '\'' +
+            ", dimensions=" + dimensions +
+            ", vertices=" + vertices +
+            ", description='" + description + '\'' +
+            '}';
+   }
+
+   @AutoProtoSchemaBuilder(includeClasses = {Shape.class},
+         schemaFileName = "shapes-schema.proto",
+         schemaPackageName = "fax.play")
+   interface ShapesSchema extends GeneratedSchema {
    }
 }

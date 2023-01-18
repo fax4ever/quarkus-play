@@ -1,7 +1,6 @@
 package fax.play.model;
 
 import java.util.Date;
-import java.util.Objects;
 
 import org.infinispan.api.annotations.indexing.Basic;
 import org.infinispan.api.annotations.indexing.Indexed;
@@ -50,18 +49,5 @@ public class Review {
             ", content='" + content + '\'' +
             ", score=" + score +
             '}';
-   }
-
-   @Override
-   public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
-      Review review = (Review) o;
-      return Objects.equals(date, review.date) && Objects.equals(content, review.content) && Objects.equals(score, review.score);
-   }
-
-   @Override
-   public int hashCode() {
-      return Objects.hash(date, content, score);
    }
 }

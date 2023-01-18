@@ -21,7 +21,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
-import fax.play.config.Config;
 import fax.play.model.Book;
 import fax.play.search.util.ModelGenerator;
 import io.quarkus.infinispan.client.Remote;
@@ -32,7 +31,7 @@ import io.quarkus.test.junit.QuarkusTest;
 public class IndexedQueriesTest {
 
    @Inject
-   @Remote(Config.CACHE_NAME)
+   @Remote("shapes-and-books")
    RemoteCache<String, Book> cache;
 
    @BeforeAll

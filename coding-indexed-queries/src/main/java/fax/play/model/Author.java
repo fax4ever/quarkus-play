@@ -1,7 +1,5 @@
 package fax.play.model;
 
-import java.util.Objects;
-
 import org.infinispan.api.annotations.indexing.Basic;
 import org.infinispan.api.annotations.indexing.Indexed;
 import org.infinispan.api.annotations.indexing.Keyword;
@@ -49,18 +47,5 @@ public class Author {
             ", surname='" + surname + '\'' +
             ", numberOfPublishedBooks=" + numberOfPublishedBooks +
             '}';
-   }
-
-   @Override
-   public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
-      Author author = (Author) o;
-      return Objects.equals(firstname, author.firstname) && Objects.equals(surname, author.surname) && Objects.equals(numberOfPublishedBooks, author.numberOfPublishedBooks);
-   }
-
-   @Override
-   public int hashCode() {
-      return Objects.hash(firstname, surname, numberOfPublishedBooks);
    }
 }
