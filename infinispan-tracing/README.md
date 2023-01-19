@@ -4,6 +4,25 @@ This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
 If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
 
+## Run Jaeger container
+
+```shell script
+docker run --name jaeger \
+  -e COLLECTOR_OTLP_ENABLED=true \
+  -p 16686:16686 \
+  -p 4317:4317 \
+  --rm \
+  jaegertracing/all-in-one:1.36
+```
+
+and find the bridge network address ip for it:
+```shell script
+docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' jaeger
+```
+
+apply the value to:
+`quarkus.infinispan-client.devservices.tracing.exporter.otlp.endpoint` of application.properties
+
 ## Running the application in dev mode
 
 You can run your application in dev mode that enables live coding using:
@@ -12,6 +31,12 @@ You can run your application in dev mode that enables live coding using:
 ```
 
 > **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
+
+## Play with the client
+
+```shell script
+curl -X PUT localhost:8080/blablabla -v
+```
 
 ## Packaging and running the application
 

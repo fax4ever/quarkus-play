@@ -26,7 +26,7 @@ public class BlaBlaBlaResource {
 
    @PUT
    @Produces(MediaType.TEXT_PLAIN)
-   @WithSpan(value = "name", kind = SpanKind.CLIENT)
+   @WithSpan(value = "bla-span", kind = SpanKind.CLIENT)
    public Map<Integer, String> putAll() {
       Map<Integer, String> entries = IntStream.range(0, 10).boxed()
             .collect(Collectors.toMap(value -> value, value -> Character.toString('A' + value)));
